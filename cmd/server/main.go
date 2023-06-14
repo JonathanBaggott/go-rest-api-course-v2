@@ -2,9 +2,7 @@ package main
 
 import "fmt"
 
-// Run - is going to be responsible for
-// the instantiation and startup of our
-// Go application
+// Run - is going to be responsible for the instantiation and startup of our Go application
 
 func Run() error {
 	fmt.Println("starting up our application")
