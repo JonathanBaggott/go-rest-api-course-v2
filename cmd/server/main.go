@@ -1,11 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/JonathanBaggott/go-rest-api-course-v2/internal/comment"
 	"github.com/JonathanBaggott/go-rest-api-course-v2/internal/db"
+	transportHttp "github.com/JonathanBaggott/go-rest-api-course-v2/internal/transport/http"
 )
 
 // Run - is going to be responsible for the instantiation and startup of our Go application
@@ -24,20 +24,10 @@ func Run() error {
 
 	cmtService := comment.NewService(db)
 
-	cmtService.PostComment(
-		context.Background(),
-		comment.Comment{
-			ID:     "9a31bf83-28dc-4b8d-bf70-7d347a24ff2e",
-			Slug:   "manual-test",
-			Author: "Jono",
-			Body:   "Hello World",
-		},
-	)
-
-	fmt.Println(cmtService.GetComment(
-		context.Background(),
-		"9a31bf83-28dc-4b8d-bf70-7d347a24ff2e",
-	))
+	httpHandler := transportHttp.NewHandler(cmtService)
+	if err := httpHandler.Serve(); err != nil {
+		return err
+	}
 
 	fmt.Println("successfully connected and pinged database")
 	return nil
