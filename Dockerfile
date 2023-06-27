@@ -1,5 +1,5 @@
 # First, we specify the base image for the build stage.
-FROM golang:1.16 AS builder
+FROM golang:1.20 AS builder
 # Create a directory called "app" inside the container.
 RUN mkdir /app
 # Copy the entire current directory (including the source code) into the "/app" directory in the container.
