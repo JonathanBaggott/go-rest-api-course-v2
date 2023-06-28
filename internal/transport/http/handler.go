@@ -1,8 +1,13 @@
 package http
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -43,10 +48,26 @@ func (h *Handler) mapRoutes() {
 	})
 }
 
-// Serve starts the HTTP server and listens for incoming requests.
+// Serve starts the HTTP server and handles graceful shutdown.
 func (h *Handler) Serve() error {
-	if err := h.Server.ListenAndServe(); err != nil {
-		return err
-	}
+	// Start the HTTP server in a goroutine.
+	go func() {
+		if err := h.Server.ListenAndServe(); err != nil {
+			log.Println(err.Error())
+		}
+	}()
+
+	// Create a channel to receive OS interrupt signals.
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	// Wait for the interrupt signal to be received on the channel 'c'.
+	<-c
+
+	// Create a context with a timeout to gracefully shutdown the server.
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	h.Server.Shutdown(ctx)
+
+	log.Println("shut down gracefully")
 	return nil
 }
