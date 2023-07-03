@@ -31,6 +31,7 @@ func NewHandler(service CommentService) *Handler {
 	h.mapRoutes()
 	h.Router.Use(JSONMiddleware)
 	h.Router.Use(LoggingMiddleware)
+	h.Router.Use(TimeoutMiddleware)
 
 	// Create a new http.Server instance and assign it to the Handler's Server field
 	h.Server = &http.Server{
@@ -47,10 +48,10 @@ func (h *Handler) mapRoutes() {
 		fmt.Fprintf(w, "Hello World")
 	})
 
-	h.Router.HandleFunc("/api/v1/comment", h.PostComment).Methods("POST")
+	h.Router.HandleFunc("/api/v1/comment", JWTAuth(h.PostComment)).Methods("POST")
 	h.Router.HandleFunc("/api/v1/comment/{id}", h.GetComment).Methods("GET")
-	h.Router.HandleFunc("/api/v1/comment/{id}", h.UpdateComment).Methods("PUT")
-	h.Router.HandleFunc("/api/v1/comment/{id}", h.DeleteComment).Methods("DELETE")
+	h.Router.HandleFunc("/api/v1/comment/{id}", JWTAuth(h.UpdateComment)).Methods("PUT")
+	h.Router.HandleFunc("/api/v1/comment/{id}", JWTAuth(h.DeleteComment)).Methods("DELETE")
 }
 
 // Serve starts the HTTP server and handles graceful shutdown
