@@ -39,6 +39,7 @@ func NewService(store Store) *Service {
 	}
 }
 
+// GetComment retrieves a comment by ID
 func (s *Service) GetComment(ctx context.Context, id string) (Comment, error) {
 	fmt.Println("retreiving a comment")
 	cmt, err := s.Store.GetComment(ctx, id)
@@ -49,24 +50,33 @@ func (s *Service) GetComment(ctx context.Context, id string) (Comment, error) {
 	return cmt, nil
 }
 
+// UpdateComment updates a comment by ID.
+// It invokes the Store interface's UpdateComment method to update the comment in the data store.
 func (s *Service) UpdateComment(
 	ctx context.Context,
 	ID string,
 	updatedCmt Comment,
 ) (Comment, error) {
+	// The returned Comment object is assigned to the cmt variable, and the error (if any) is assigned to the err variable
 	cmt, err := s.Store.UpdateComment(ctx, ID, updatedCmt)
 	if err != nil {
 		fmt.Println("error updating comment")
+		// Returns an empty Comment object along with the received error
 		return Comment{}, err
 	}
+	// Return the updated Comment object and a nil error if there are no errors, indicating a successful update
 	return cmt, nil
 }
 
+// DeleteComment deletes a comment by ID
 func (s *Service) DeleteComment(ctx context.Context, id string) error {
+	// Call the DeleteComment method of the Store interface to delete the comment by ID
 	return s.Store.DeleteComment(ctx, id)
 }
 
+// PostComment creates a new comment
 func (s *Service) PostComment(ctx context.Context, cmt Comment) (Comment, error) {
+	// Call the PostComment method of the Store interface to create a new comment
 	insertedCmt, err := s.Store.PostComment(ctx, cmt)
 	if err != nil {
 		return Comment{}, err
