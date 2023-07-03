@@ -30,6 +30,7 @@ func NewHandler(service CommentService) *Handler {
 	// Map the routes to their respective handlers
 	h.mapRoutes()
 	h.Router.Use(JSONMiddleware)
+	h.Router.Use(LoggingMiddleware)
 
 	// Create a new http.Server instance and assign it to the Handler's Server field
 	h.Server = &http.Server{
