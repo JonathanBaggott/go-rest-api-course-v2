@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/JonathanBaggott/go-rest-api-course-v2/internal/comment"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
 
@@ -24,24 +25,52 @@ type Response struct {
 	Message string
 }
 
+// PostCommentRequest represents the structure of the request body for a new comment
+type PostCommentRequest struct {
+	Slug   string `json:"slug" validate:"required"`
+	Author string `json:"author" validate:"required"`
+	Body   string `json:"body" validate:"required"`
+}
+
+// convertPostCommentRequestToComment is a helper function that takes an instance of the 'PostCommentRequest' struct as input,
+// and converts it into an instance of the 'comment.Comment' struct.
+func convertPostCommentRequestToComment(c PostCommentRequest) comment.Comment {
+	return comment.Comment{
+		Slug:   c.Slug,
+		Author: c.Author,
+		Body:   c.Body,
+	}
+}
+
 // PostComment handles the HTTP POST request for creating a new comment
 func (h *Handler) PostComment(w http.ResponseWriter, r *http.Request) {
-	var cmt comment.Comment
+	var cmt PostCommentRequest
 
 	// Decode the request body into a Comment struct
 	if err := json.NewDecoder(r.Body).Decode(&cmt); err != nil {
 		return
 	}
 
+	// Create a new instance of the validator and assign it to 'validate'
+	validate := validator.New()
+	// Validate the fields of the 'cmt' struct using the 'validate' instance
+	err := validate.Struct(cmt)
+	if err != nil {
+		http.Error(w, "not a valid comment", http.StatusBadRequest)
+		return
+	}
+
+	// Assign the result of converting the 'cmt' variable to a 'comment.Comment' object to 'convertedComment'
+	convertedComment := convertPostCommentRequestToComment(cmt)
 	// Call the PostComment method of the CommentService to create a new comment
-	cmt, err := h.Service.PostComment(r.Context(), cmt)
+	postedComment, err := h.Service.PostComment(r.Context(), convertedComment)
 	if err != nil {
 		log.Print(err)
 		return
 	}
 
 	// Encode the comment as JSON and send it in the response
-	if err := json.NewEncoder(w).Encode(cmt); err != nil {
+	if err := json.NewEncoder(w).Encode(postedComment); err != nil {
 		panic(err)
 	}
 
