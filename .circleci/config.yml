@@ -11,6 +11,6 @@ jobs:
           command: "echo Completed!"
 
 workflows:
-  say-hello-workflow:
+  build-workflow:
     jobs:
       - build
