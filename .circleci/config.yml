@@ -7,8 +7,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Status"
+          command: "echo Completed!"
 
 workflows:
   say-hello-workflow:
