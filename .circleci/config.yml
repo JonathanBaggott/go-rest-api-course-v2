@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  say-hello:
+  build:
     docker:
       - image: cimg/base:stable
     steps:
@@ -13,4 +13,4 @@ jobs:
 workflows:
   say-hello-workflow:
     jobs:
-      - say-hello
+      - build
