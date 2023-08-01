@@ -1,10 +1,11 @@
 Go REST API Course Version 2
 ============================
 
+## Overview
+A REST API built with Go that provides CRUD functionality for comments.
 ## Tools Needed
 
-* go version
-* git version
-* docker -v
-* docker-compose -v
-* task
+* Git
+* Docker
+* Task
+* CircleCI
